@@ -2,7 +2,7 @@ import fs from "node:fs";
 import http from "node:http";
 import qs from "node:querystring";
 
-import { handleMessage } from "./messages.js";
+import { handleMessage } from "./messages.ts";
 
 const PORT = 8080;
 
@@ -62,7 +62,7 @@ const server = http.createServer((req, res) => {
 
     req.on("end", () => {
       const parsed = qs.parse(body);
-      const message = parsed.message || "";
+      const message = String(parsed.message || "").trim();
 
       // Server-side processing: here we just log
       console.log("Received message:", message);
@@ -99,7 +99,7 @@ const server = http.createServer((req, res) => {
 });
 
 // Basic HTML-escaping to avoid reflected XSS in the response
-function escapeHtml(str) {
+function escapeHtml(str: string) {
   if (str === undefined || str === null) return "";
   return String(str)
     .replace(/&/g, "&amp;")
