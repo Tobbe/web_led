@@ -28,7 +28,7 @@ httpServer.on("request", (req, res) => {
   });
 
   req.on("end", () => {
-    if (body === "LED_ON" || body === "LED_OFF") {
+    if (body === "LED_ON" || body === "LED_OFF" || body === "LED_TOGGLE") {
       socket.setNoDelay(true);
       socket.write(body + "\n");
       logMessage(`${body} sent`);

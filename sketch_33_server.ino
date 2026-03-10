@@ -50,6 +50,9 @@ void loop() {
         } else if (msg == "LED_OFF") {
           Serial.println("Turn LED off");
           digitalWrite(PIN_LED, 0);
+        } else if (msg == "LED_TOGGLE") {
+          Serial.println("Toggle LED");
+          digitalWrite(PIN_LED, !digitalRead(PIN_LED));
         }
 
         // clear the wifi receive area cache
