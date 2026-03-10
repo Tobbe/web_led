@@ -7,7 +7,7 @@
     <style>
       :root {
         --bg: #f5f7fb;
-        --card: #ffffff;
+        --card: #fff;
         --accent: #4f46e5;
         --muted: #6b7280;
         --radius: 12px;
@@ -24,9 +24,8 @@
 
       html,
       body {
-        height: calc(100vh - 48px);
+        height: 100%;
       }
-
       body {
         margin: 0;
         background:
@@ -46,6 +45,8 @@
         justify-content: center;
         padding: 24px;
         color: #0f172a;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
       .card {
@@ -62,30 +63,45 @@
         margin: 0 0 8px;
         font-size: 20px;
       }
-
       p.lead {
         margin: 0 0 20px;
         color: var(--muted);
       }
 
+      /* === Form layout ===
+           - label sits full width above inputs
+           - .row contains .input-group + button on the same horizontal row
+           - responsive: row becomes column on narrow viewports */
       form {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 12px;
-        align-items: start;
-      }
-
-      .input-wrap {
         display: flex;
         flex-direction: column;
+        gap: 12px;
       }
+
+      /* label full width, separate row */
       label {
         font-size: 12px;
         color: var(--muted);
-        margin-bottom: 6px;
+        display: block;
       }
+
+      /* row that contains input-group + button */
+      .row {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start; /* button aligns to top of input-group (the input) */
+      }
+
+      /* group input + status vertically */
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1 1 auto; /* take remaining space so button sits to the right */
+        min-width: 0; /* allow input to shrink inside flex */
+      }
+
       input[type="text"] {
-        height: 16px;
         padding: 12px 14px;
         border-radius: 10px;
         border: 1px solid #e6e9ee;
@@ -94,11 +110,24 @@
         transition:
           box-shadow 0.15s,
           border-color 0.15s;
+        width: 100%;
+        box-sizing: border-box;
+        background: white;
+        color: inherit;
+        line-height: 1;
       }
+
       input[type="text"]:focus {
         border-color: rgba(79, 70, 229, 0.9);
         box-shadow: 0 6px 20px rgba(79, 70, 229, 0.08);
       }
+
+      #status {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1;
+      }
+
       button {
         background: linear-gradient(180deg, var(--accent), #3730a3);
         color: white;
@@ -110,49 +139,73 @@
         box-shadow: 0 6px 18px rgba(79, 70, 229, 0.12);
         transition:
           transform 0.08s ease,
-          opacity 0.08s;
-        align-self: end;
+          opacity 0.08s,
+          box-shadow 0.08s;
+        align-self: flex-start; /* top-align on desktop */
         line-height: 1;
         height: 42px;
+        min-width: 86px;
       }
 
       button:active {
         transform: translateY(1px);
       }
 
+      button:focus-visible {
+        outline: 3px solid rgba(79, 70, 229, 0.18);
+        outline-offset: 2px;
+      }
+
+      /* Mobile: stack the row vertically so button goes below status */
       @media (max-width: 520px) {
-        form {
-          grid-template-columns: 1fr;
+        .row {
+          flex-direction: column;
+          align-items: stretch;
         }
         button {
           width: 100%;
+          align-self: stretch;
         }
+      }
+
+      /* Simple messages list styling */
+      h2 {
+        margin-top: 20px;
+        font-size: 16px;
+      }
+      #messages {
+        margin: 8px 0 0;
+        padding-left: 16px;
+      }
+      #messages li {
+        margin-bottom: 6px;
       }
     </style>
   </head>
   <body>
     <main class="card" role="main">
-      <h1>Send a message</h1>
+      <h1>ESP32 LED Control</h1>
       <p class="lead">
-        Type anything and press Send. The text will be POSTed back to this
-        server.
+        Use the form below to control the LED connected to the ESP32.
       </p>
 
       <form id="msgForm" method="POST" action="/" autocomplete="off">
-        <div class="input-wrap">
-          <label for="message">Message</label>
-          <input
-            id="message"
-            name="message"
-            type="text"
-            placeholder="Hello world"
-            required
-          />
-          <span id="status" aria-live="polite"
-            >Waiting for message to send</span
-          >
+        <label for="message">Message</label>
+
+        <div class="row">
+          <div class="input-group">
+            <input
+              id="message"
+              name="message"
+              type="text"
+              placeholder=""
+              required
+            />
+            <span id="status" aria-live="polite"></span>
+          </div>
+
+          <button type="submit">Send</button>
         </div>
-        <button type="submit">Send</button>
       </form>
 
       <h2>Messages</h2>
