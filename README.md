@@ -15,3 +15,5 @@ Sprites come with nvm, but it's not fully set up. Run
 `/.sprite/languages/node/nvm/install.sh` and then `source ~/.zshrc`. After that,
 you can run `nvm install --lts` to install and switch to the latest LTS version
 of Node.js.
+
+When logged in to the sprite, run `node led_server.js` to start the web server.
