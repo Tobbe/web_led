@@ -125,6 +125,18 @@ async function sendCmd(cmd: "LED_ON" | "LED_OFF" | "LED_TOGGLE") {
   return cmd;
 }
 
+type Cmd = "SLEEP" | "LED_ON" | "LED_OFF" | "LED_TOGGLE";
+
+async function executeCmdQueue(cmdQueue: { cmd: Cmd; arg?: number }[]) {
+  for (const { cmd, arg } of cmdQueue) {
+    if (cmd === "SLEEP") {
+      await new Promise((resolve) => setTimeout(resolve, (arg || 0) * 1000));
+    } else {
+      await sendCmd(cmd);
+    }
+  }
+}
+
 const CONTROL_SYSTEM_PROMPT = `
 You help a user to control an LED by calling tools.
 
@@ -147,6 +159,11 @@ async function controlLed(msg: string) {
 
   const prompt = CONTROL_SYSTEM_PROMPT + "\n" + msg;
 
+  const cmdQueue: {
+    cmd: Cmd;
+    arg?: number;
+  }[] = [];
+
   const result31 = await generateText({
     model: model31,
     tools: {
@@ -158,13 +175,14 @@ async function controlLed(msg: string) {
         execute: async ({ action }) => {
           console.log("led tool executed", { action });
 
-          await sendCmd(
+          const actionStr =
             action === "on"
               ? "LED_ON"
               : action === "off"
                 ? "LED_OFF"
-                : "LED_TOGGLE",
-          );
+                : "LED_TOGGLE";
+
+          cmdQueue.push({ cmd: actionStr });
 
           return "The LED was turned " + action;
         },
@@ -180,7 +198,7 @@ async function controlLed(msg: string) {
         execute: async ({ duration }) => {
           console.log("sleep tool executed", { duration });
 
-          await new Promise((resolve) => setTimeout(resolve, duration * 1000));
+          cmdQueue.push({ cmd: "SLEEP", arg: duration });
 
           return "Slept for " + duration + " seconds";
         },
@@ -194,6 +212,8 @@ async function controlLed(msg: string) {
     console.log("controlLed result.steps.length", result31.steps.length);
   }
   console.log("controlLed result.text", result31.text);
+
+  await executeCmdQueue(cmdQueue);
 
   return result31.text;
 }
