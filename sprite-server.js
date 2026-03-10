@@ -36,6 +36,8 @@ const server = http.createServer((req, res) => {
         }
 
         console.log("Received message:", msg);
+        res.writeHead(202, { "Content-Type": "text/plain; charset=utf-8" });
+        res.end("Accepted");
       } catch (err) {
         res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
         res.end("Invalid JSON");
