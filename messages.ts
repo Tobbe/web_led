@@ -138,12 +138,13 @@ async function controlLed(msg: string) {
   const lowercaseMsg = msg.toLowerCase();
 
   // Try direct handling of simple LED commands to save time
-  // TODO: Enable when we've tested the LLM stuff properly
   if (onCommands.some((cmd) => lowercaseMsg.includes(cmd))) {
     return sendCmd("LED_ON");
   } else if (offCommands.some((cmd) => lowercaseMsg.includes(cmd))) {
     return sendCmd("LED_OFF");
   }
+
+  console.log("Asking Gemini for help...");
 
   const model31 = google("gemini-3.1-flash-lite-preview");
 
@@ -200,5 +201,6 @@ export async function handleMessage(msg: string) {
     return;
   }
 
+  console.log("calling controlLed", msg);
   await controlLed(msg);
 }
