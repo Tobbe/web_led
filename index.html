@@ -138,7 +138,7 @@
         server.
       </p>
 
-      <form method="POST" action="/" autocomplete="off">
+      <form id="msgForm" method="POST" action="/" autocomplete="off">
         <div class="input-wrap">
           <label for="message">Message</label>
           <input
@@ -157,6 +157,9 @@
     </main>
 
     <script>
+      const form = document.getElementById("msgForm");
+      const input = document.getElementById("message");
+
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
