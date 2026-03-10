@@ -80,10 +80,7 @@ async function isLedCommand(msg: string) {
     return false;
   }
 
-  if (
-    onCommands.some((cmd) => lowercaseMsg.includes(cmd)) ||
-    offCommands.some((cmd) => lowercaseMsg.includes(cmd))
-  ) {
+  if (onCommands.includes(lowercaseMsg) || offCommands.includes(lowercaseMsg)) {
     // Direct handling of simple LED commands to save time
     return true;
   }
@@ -138,9 +135,9 @@ async function controlLed(msg: string) {
   const lowercaseMsg = msg.toLowerCase();
 
   // Try direct handling of simple LED commands to save time
-  if (onCommands.some((cmd) => lowercaseMsg.includes(cmd))) {
+  if (onCommands.includes(lowercaseMsg)) {
     return sendCmd("LED_ON");
-  } else if (offCommands.some((cmd) => lowercaseMsg.includes(cmd))) {
+  } else if (offCommands.includes(lowercaseMsg)) {
     return sendCmd("LED_OFF");
   }
 
