@@ -1,3 +1,4 @@
 .env
 .sprite
 constants.h
+node_modules

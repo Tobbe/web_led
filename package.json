@@ -1,1 +1,12 @@
-{ "type": "module" }
+{
+  "type": "module",
+  "dependencies": {
+    "@ai-sdk/google": "2.0.38",
+    "ai": "^5.0.151",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.4.0",
+    "typescript": "^5.9.3"
+  }
+}
