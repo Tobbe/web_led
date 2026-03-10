@@ -2,7 +2,7 @@ import fs from "node:fs";
 import http from "node:http";
 import qs from "node:querystring";
 
-const PORT = 3000;
+const PORT = 8080;
 
 const html = fs.readFileSync("./index.html", "utf-8");
 

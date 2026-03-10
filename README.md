@@ -16,4 +16,5 @@ Sprites come with nvm, but it's not fully set up. Run
 you can run `nvm install --lts` to install and switch to the latest LTS version
 of Node.js.
 
-When logged in to the sprite, run `node led_server.js` to start the web server.
+When logged in to the sprite, run `node sprite-server.js` to start the web
+server that's supposed to run on the sprite for public accees.
