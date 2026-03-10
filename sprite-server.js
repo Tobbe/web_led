@@ -9,12 +9,43 @@ const html = fs.readFileSync("./index.html", "utf-8");
 // Basic server: serves HTML on GET and handles form POST on /
 const server = http.createServer((req, res) => {
   if (req.method === "GET" && req.url === "/") {
-    // Serve the styled form page
+    // Serve index.html
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
     res.end(html);
     return;
   }
 
+  if (req.method === "POST" && req.url === "/messages") {
+    // Expect JSON body { message: "..." }
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+      if (body.length > 1e6) req.socket.destroy();
+    });
+
+    req.on("end", () => {
+      try {
+        const parsed = JSON.parse(body);
+        const msg = parsed?.message ? String(parsed.message).trim() : "";
+
+        if (!msg) {
+          res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+          res.end("Message required");
+
+          return;
+        }
+
+        console.log("Received message:", msg);
+      } catch (err) {
+        res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+        res.end("Invalid JSON");
+      }
+    });
+
+    return;
+  }
+
+  // Fallback for no-js
   if (req.method === "POST" && req.url === "/") {
     // Collect POST body
     let body = "";

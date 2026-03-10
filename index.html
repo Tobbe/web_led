@@ -24,7 +24,7 @@
 
       html,
       body {
-        height: 100%;
+        height: calc(100vh - 48px);
       }
 
       body {
@@ -115,23 +115,11 @@
         line-height: 1;
         height: 42px;
       }
+
       button:active {
         transform: translateY(1px);
       }
-      .foot {
-        margin-top: 18px;
-        font-size: 13px;
-        color: var(--muted);
-      }
-      .received {
-        margin-top: 18px;
-        padding: 12px;
-        background: #fbfdff;
-        border-radius: 10px;
-        border: 1px solid #eef2ff;
-        color: #0b1220;
-        word-break: break-word;
-      }
+
       @media (max-width: 520px) {
         form {
           grid-template-columns: 1fr;
@@ -164,10 +152,41 @@
         <button type="submit">Send</button>
       </form>
 
-      <p class="foot">
-        This is a minimal example. Do not use as-is in production without
-        additional hardening.
-      </p>
+      <h2>Messages</h2>
+      <ul id="messages"></ul>
     </main>
+
+    <script>
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const value = input.value.trim();
+
+        if (!value) {
+          return;
+        }
+
+        try {
+          const res = await fetch("/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: value }),
+          });
+
+          if (!res.ok) {
+            const err = await res.text();
+            throw new Error(err || "Server error");
+          }
+
+          const list = document.getElementById("messages");
+          list.innerHTML += `<li>${value}</li>`;
+
+          input.value = "";
+          input.focus();
+        } catch (err) {
+          console.error(err);
+        }
+      });
+    </script>
   </body>
 </html>
