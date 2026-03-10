@@ -148,6 +148,7 @@
             placeholder="Hello world"
             required
           />
+          <span id="status" aria-live="polite" />
         </div>
         <button type="submit">Send</button>
       </form>
@@ -159,6 +160,7 @@
     <script>
       const form = document.getElementById("msgForm");
       const input = document.getElementById("message");
+      const status = document.getElementById("status");
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -171,12 +173,26 @@
           return;
         }
 
+        let planningTimer;
+
+        const initialTimer = setTimeout(() => {
+          status.textContent = "Sending...";
+
+          planningTimer = setTimeout(() => {
+            status.textContent = "Planning execution...";
+          }, 1_000);
+        }, 1_000);
+
         try {
           const res = await fetch("/messages", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: value }),
           });
+
+          clearTimeout(initialTimer);
+          clearTimeout(planningTimer);
+          status.textContent = "";
 
           if (!res.ok) {
             const err = await res.text();
