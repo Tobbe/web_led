@@ -104,7 +104,8 @@ async function isLedCommand(msg: string) {
 }
 
 async function sendCmd(cmd: "LED_ON" | "LED_OFF" | "LED_TOGGLE") {
-  console.log("calling sendCmd", cmd);
+  logMessage(`sendCmd ${cmd}`);
+
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -189,7 +190,9 @@ async function controlLed(msg: string) {
     prompt,
   });
 
-  console.log("controlLed result.steps", result31.steps);
+  if (result31.steps) {
+    console.log("controlLed result.steps.length", result31.steps.length);
+  }
   console.log("controlLed result.text", result31.text);
 
   return result31.text;
@@ -205,4 +208,13 @@ export async function handleMessage(msg: string) {
 
   console.log("calling controlLed", msg);
   await controlLed(msg);
+}
+
+function logMessage(message: string) {
+  const d = new Date();
+  const hh = d.getHours().toString().padStart(2, "0");
+  const mm = d.getMinutes().toString().padStart(2, "0");
+  const ss = d.getSeconds().toString().padStart(2, "0");
+  const ms = d.getMilliseconds().toString().padStart(3, "0");
+  console.log(`${hh}:${mm}:${ss}.${ms}: ${message}`);
 }
