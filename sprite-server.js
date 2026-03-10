@@ -2,6 +2,8 @@ import fs from "node:fs";
 import http from "node:http";
 import qs from "node:querystring";
 
+import { handleMessage } from "./messages.js";
+
 const PORT = 8080;
 
 const html = fs.readFileSync("./index.html", "utf-8");
@@ -23,7 +25,7 @@ const server = http.createServer((req, res) => {
       if (body.length > 1e6) req.socket.destroy();
     });
 
-    req.on("end", () => {
+    req.on("end", async () => {
       try {
         const parsed = JSON.parse(body);
         const msg = parsed?.message ? String(parsed.message).trim() : "";
@@ -36,6 +38,8 @@ const server = http.createServer((req, res) => {
         }
 
         console.log("Received message:", msg);
+        await handleMessage(msg);
+
         res.writeHead(202, { "Content-Type": "text/plain; charset=utf-8" });
         res.end("Accepted");
       } catch (err) {
